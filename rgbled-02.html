@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>RGB LED 控制 (10,9,7)</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .color-btn { transition: transform 0.1s; border: 1px solid rgba(255,255,255,0.1); }
+    .color-btn:active { transform: scale(0.95); }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative">
+
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 border-t border-white/10">
+            
+            <h1 class="text-xl font-bold mb-2 text-center">RGB 調色盤 II</h1>
+            <p class="text-xs text-slate-500 text-center mb-8 font-mono">Pins: R=10, G=9, B=7</p>
+            
+            <div class="grid grid-cols-3 gap-4">
+                <button id="btn1" class="color-btn aspect-square rounded-xl bg-red-600 shadow-lg shadow-red-900/40"></button>
+                <button id="btn2" class="color-btn aspect-square rounded-xl bg-orange-500 shadow-lg shadow-orange-900/40"></button>
+                <button id="btn3" class="color-btn aspect-square rounded-xl bg-yellow-400 shadow-lg shadow-yellow-900/40"></button>
+                
+                <button id="btn4" class="color-btn aspect-square rounded-xl bg-green-500 shadow-lg shadow-green-900/40"></button>
+                <button id="btn5" class="color-btn aspect-square rounded-xl bg-sky-500 shadow-lg shadow-sky-900/40"></button>
+                <button id="btn6" class="color-btn aspect-square rounded-xl bg-blue-600 shadow-lg shadow-blue-900/40"></button>
+                
+                <button id="btn7" class="color-btn aspect-square rounded-xl bg-purple-600 shadow-lg shadow-purple-900/40"></button>
+                <button id="btn8" class="color-btn aspect-square rounded-xl bg-slate-950 flex items-center justify-center text-xs font-bold text-slate-500">OFF</button>
+                <button id="btn9" class="color-btn aspect-square rounded-xl bg-white flex items-center justify-center text-xs font-bold text-slate-800">ON</button>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+var rgbled;
+boardReady('nbQD', function (board) {
+  board.samplingInterval = 20;
+  rgbled = getRGBLed(board, 10, 9, 7);
+  document.getElementById("btn1").addEventListener("click",function(){ rgbled.setColor('#FF0000'); });
+  document.getElementById("btn2").addEventListener("click",function(){ rgbled.setColor('#FF6600'); });
+  document.getElementById("btn3").addEventListener("click",function(){ rgbled.setColor('#FFFF00'); });
+  document.getElementById("btn4").addEventListener("click",function(){ rgbled.setColor('#00FF00'); });
+  document.getElementById("btn5").addEventListener("click",function(){ rgbled.setColor('#0099FF'); });
+  document.getElementById("btn6").addEventListener("click",function(){ rgbled.setColor('#0000FF'); });
+  document.getElementById("btn7").addEventListener("click",function(){ rgbled.setColor('#6600CC'); });
+  document.getElementById("btn8").addEventListener("click",function(){ rgbled.setColor('#000000'); });
+  document.getElementById("btn9").addEventListener("click",function(){ rgbled.setColor('#FFFFFF'); });
+});
+</script>
+</body>
+</html>

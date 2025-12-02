@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>LED 自動閃爍</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"> </script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"> </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative">
+
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 border-t border-white/10 text-center">
+            
+            <h1 class="text-xl font-bold mb-6">LED 自動閃爍</h1>
+            
+            <div class="flex justify-center mb-8">
+                <div class="relative">
+                    <div class="w-24 h-24 rounded-full bg-yellow-400 animate-ping absolute top-0 left-0 opacity-20"></div>
+                    <div class="w-24 h-24 rounded-full bg-yellow-500 flex items-center justify-center shadow-[0_0_40px_rgba(234,179,8,0.5)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21h6v-1.5H9V21zM12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700">
+                <p class="text-sm text-slate-400">腳位 10 (Pin 10)</p>
+                <p class="text-xs text-green-400 mt-2 font-mono">Blinking Interval: 500ms</p>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+var led;
+boardReady({device: 'nbQD'}, function (board) {
+  board.systemReset();
+  board.samplingInterval = 250;
+  led = getLed(board, 10);
+  led.blink(0.5*1000);
+});
+</script>
+</body>
+</html>

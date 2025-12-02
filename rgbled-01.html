@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB LED 控制 (nbQD)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+    <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .color-dot { transition: transform 0.1s; }
+        .color-dot:active { transform: scale(0.9); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-slate-200">
+
+    <!-- 統一回上一頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="container relative z-10 max-w-sm w-full p-4">
+        <div class="glass-panel rounded-3xl p-6 border-t border-white/10">
+            
+            <div class="mb-6">
+                <h1 class="text-lg font-bold">RGB LED (nbQD)</h1>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <!-- Red -->
+                <button id="btn1" class="color-dot h-16 rounded-xl bg-red-600 shadow-lg shadow-red-900/30"></button>
+                <!-- Orange -->
+                <button id="btn2" class="color-dot h-16 rounded-xl bg-orange-500 shadow-lg shadow-orange-900/30"></button>
+                <!-- Yellow -->
+                <button id="btn3" class="color-dot h-16 rounded-xl bg-yellow-400 shadow-lg shadow-yellow-900/30"></button>
+                <!-- Green -->
+                <button id="btn4" class="color-dot h-16 rounded-xl bg-green-500 shadow-lg shadow-green-900/30"></button>
+                <!-- Light Blue -->
+                <button id="btn5" class="color-dot h-16 rounded-xl bg-sky-500 shadow-lg shadow-sky-900/30"></button>
+                <!-- Blue -->
+                <button id="btn6" class="color-dot h-16 rounded-xl bg-blue-700 shadow-lg shadow-blue-900/30"></button>
+                <!-- Purple -->
+                <button id="btn7" class="color-dot h-16 rounded-xl bg-purple-600 shadow-lg shadow-purple-900/30"></button>
+                <!-- Black/Off -->
+                <button id="btn8" class="color-dot h-16 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500 text-xs font-bold">OFF</button>
+                <!-- White -->
+                <button id="btn9" class="color-dot h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800 text-xs font-bold">ON</button>
+            </div>
+
+            <p class="text-center text-xs text-slate-500 font-mono">Pins: R=6, G=7, B=8</p>
+        </div>
+    </div>
+
+    <script>
+        var rgbled;
+        boardReady('nbQD', function (board) {
+            board.samplingInterval = 250;
+            rgbled = getRGBLed(board, 6, 8, 7);
+            
+            const bind = (id, color) => {
+                document.getElementById(id).addEventListener("click", () => rgbled.setColor(color));
+            }
+
+            bind("btn1", '#FF0000');
+            bind("btn2", '#FF6600');
+            bind("btn3", '#FFFF00');
+            bind("btn4", '#00FF00');
+            bind("btn5", '#0099FF');
+            bind("btn6", '#0000FF');
+            bind("btn7", '#6600CC');
+            bind("btn8", '#000000');
+            bind("btn9", '#FFFFFF');
+        });
+    </script>
+</body>
+</html>

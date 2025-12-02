@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>LED 閃爍控制</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .control-btn { transition: all 0.2s; }
+    .control-btn:active { transform: scale(0.95); }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative">
+
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 border-t border-white/10">
+            
+            <div class="text-center mb-8">
+                <h1 class="text-xl font-bold">LED 閃爍控制器</h1>
+                <p class="text-xs text-slate-500 mt-1 font-mono">Pin 6</p>
+            </div>
+            
+            <div class="space-y-4">
+                <button id="btn1" class="control-btn w-full py-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center justify-center space-x-3 text-yellow-400">
+                    <span class="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></span>
+                    <span class="font-bold">慢速閃爍 (0.5s)</span>
+                </button>
+
+                <button id="btn2" class="control-btn w-full py-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center justify-center space-x-3 text-orange-400">
+                    <span class="w-3 h-3 rounded-full bg-orange-400 animate-[pulse_0.2s_infinite]"></span>
+                    <span class="font-bold">快速閃爍 (0.2s)</span>
+                </button>
+
+                <button id="btn3" class="control-btn w-full py-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 flex items-center justify-center space-x-3 text-slate-400">
+                    <span class="w-3 h-3 rounded-full bg-slate-600"></span>
+                    <span class="font-bold">關閉 LED</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+var led;
+boardReady('nbQD', function (board) {
+  board.samplingInterval = 20;
+  led = getLed(board, 6);
+  led.off();
+  document.getElementById("btn1").addEventListener("click",function(){
+    led.blink(0.5*1000);
+  });
+  document.getElementById("btn2").addEventListener("click",function(){
+    led.blink(0.2*1000);
+  });
+  document.getElementById("btn3").addEventListener("click",function(){
+    led.off();
+  });
+});
+</script>
+</body>
+</html>

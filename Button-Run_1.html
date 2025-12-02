@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>賽跑遊戲 (200M)</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .track { background: repeating-linear-gradient(90deg, transparent 0, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 42px); }
+    .runner { transition: margin-left 0.3s linear; width: 80px; transform: scaleX(-1); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+    .score-board { font-family: 'Orbitron', monospace; }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative">
+
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-2xl w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 border-t border-white/10">
+            
+            <div class="text-center mb-8 flex justify-between items-end border-b border-slate-700/50 pb-4">
+                <div class="text-left">
+                    <h1 class="text-xl font-bold text-slate-100">人機賽跑</h1>
+                    <p class="text-xs text-slate-500 font-mono">連按按鈕衝刺 (Pin 11)</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400">目標距離</p>
+                    <span id="goal" class="text-2xl font-bold text-cyan-400 score-board">200</span>
+                </div>
+            </div>
+
+            <!-- 賽況顯示 -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-900/50 rounded-xl p-3 flex justify-between items-center border border-slate-700">
+                    <span class="text-sm text-pink-400 font-bold">電腦 (Cat)</span>
+                    <span id="npcshow" class="text-xl font-bold score-board">0</span>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-3 flex justify-between items-center border border-slate-700">
+                    <span class="text-sm text-amber-400 font-bold">玩家 (Lion)</span>
+                    <span id="usershow" class="text-xl font-bold score-board">0</span>
+                </div>
+            </div>
+
+            <!-- 賽道區域 -->
+            <div class="relative bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden mb-8 track h-[240px]">
+                
+                <!-- 終點線 -->
+                <div class="absolute top-0 bottom-0 right-[20px] w-2 bg-white/20 z-0"></div>
+                <div class="absolute top-2 bottom-2 right-[20px] transform translate-x-1/2 text-xs text-white/30 [writing-mode:vertical-rl] font-mono">FINISH</div>
+
+                <!-- 跑道 1 (NPC) -->
+                <div class="h-1/2 border-b border-slate-700/50 relative flex items-center px-4">
+                    <div id="npc" class="runner">
+                        <img id="npcimg" src="run-cat.gif" alt="Cat" class="w-full">
+                    </div>
+                </div>
+
+                <!-- 跑道 2 (User) -->
+                <div class="h-1/2 relative flex items-center px-4">
+                    <div id="user" class="runner">
+                        <img id="userimg" src="run-lion.gif" alt="Lion" class="w-full">
+                    </div>
+                </div>
+            </div>
+
+            <button id="start" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-lg shadow-lg shadow-blue-900/30 transition-all active:scale-95">
+                比賽開始
+            </button>
+
+        </div>
+    </div>
+
+<script language="JavaScript">
+boardReady('nbQD', function (board) {
+  board.samplingInterval = 20;
+  button = getButton(board, 11);
+  
+  var btnGameNpcShow_ = document.getElementById("npcshow"),
+      btnGameUserShow_ = document.getElementById("usershow"),
+      btnGameNpc_ = document.getElementById("npc"),
+      btnGameUser_ = document.getElementById("user"),
+      btnGameNpcImg_ = document.getElementById("npcimg"),
+      btnGameUserImg_ = document.getElementById("userimg"),
+      btnGameGoal_ = document.getElementById("goal"),
+      btnGameStart_ = document.getElementById("start"),
+      btnGameTimer_,
+      btnGameA_ = 0,
+      btnGameB_ = 0,
+      btnGameDistance_ = 200,
+      btnGameNpcSpeed_ = 1,
+      btnGameUserSpeed_;
+
+  // Init Images
+  btnGameNpcImg_.src = "run-cat.gif";
+  btnGameUserImg_.src = "run-lion.gif";
+  
+  btnGameGoal_.innerHTML = btnGameDistance_;
+  btnGameStart_.addEventListener("click", go);
+
+  function go(){
+    btnGameStart_.style.display = 'none'; // Hide button visually
+    btnGameA_ = 0;
+    btnGameB_ = 0;
+    
+    button.on("pressed", function(){
+        btnGameA_ = btnGameA_ + 2;
+        btnGameUserShow_.innerHTML = btnGameA_;
+        // Limit max width to avoid breaking layout, purely visual
+        if(btnGameA_ <= btnGameDistance_ + 20) {
+            btnGameUser_.style.marginLeft = btnGameA_ + "px";
+        }
+        
+        if(btnGameA_ >= btnGameDistance_ + 2){
+          alert("你贏了！");
+          stop();
+        }
+    });
+
+    btnGameTimer_ = setInterval(function(){
+		btnGameB_ = btnGameB_ + btnGameNpcSpeed_;
+		btnGameNpcShow_.innerHTML = btnGameB_;
+        
+        if(btnGameB_ <= btnGameDistance_ + 20) {
+		    btnGameNpc_.style.marginLeft = btnGameB_ + "px";
+        }
+
+		if(btnGameB_ >= btnGameDistance_ + 2){
+			alert("你輸了！");
+			stop();
+		}
+    }, 120);
+
+    function stop(){
+      clearInterval(btnGameTimer_);
+      btnGameA_ = 0;
+      btnGameB_ = 0;
+      btnGameNpcShow_.innerHTML = 0;
+      btnGameUserShow_.innerHTML = 0;
+      btnGameNpc_.style.marginLeft = 0;
+      btnGameUser_.style.marginLeft = 0;
+      
+      btnGameStart_.style.display = 'block'; // Show button
+      
+      button.removeAllListeners("pressed");
+    }
+  }
+});
+</script>
+</body>
+</html>

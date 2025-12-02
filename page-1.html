@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>David 的作業展示 | Page 01</title>
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            overflow-x: hidden;
+        }
+        
+        /* 動態背景動畫 */
+        @keyframes float {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 圖片容器發光效果 */
+        .image-container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #ec4899, #8b5cf6);
+            border-radius: 1rem;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+            transition: opacity 0.3s;
+        }
+        
+        .image-container:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative selection:bg-pink-500 selection:text-white">
+
+    <!-- 統一回上一頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <!-- 背景裝飾 (偏向紫色系，呼應 Page 1) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob bg-pink-600/20 w-96 h-96 rounded-full top-0 left-0 mix-blend-screen"></div>
+        <div class="blob bg-purple-600/20 w-96 h-96 rounded-full bottom-0 right-0 mix-blend-screen animation-delay-2000"></div>
+        <div class="blob bg-indigo-600/20 w-80 h-80 rounded-full top-1/2 left-1/2 mix-blend-screen animation-delay-4000"></div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="container mx-auto px-4 relative z-10 max-w-lg w-full">
+        
+        <div class="glass-panel rounded-3xl p-8 transform transition-all hover:scale-[1.01] duration-500 border-t border-white/10">
+            
+            <!-- 標籤 -->
+            <div class="flex justify-end mb-4">
+                <div class="text-xs font-mono text-slate-500 bg-slate-900/50 px-2 py-1 rounded">PAGE 01</div>
+            </div>
+
+            <!-- 標題與內容 -->
+            <div class="text-center space-y-6">
+                <div>
+                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 mb-2">
+                        作業展示區
+                    </h1>
+                    <p class="text-slate-400 text-sm">David 的 Project 1 · Running Cat</p>
+                </div>
+
+                <!-- 圖片展示框 -->
+                <div class="relative group">
+                    <div class="image-container relative rounded-xl bg-slate-900 p-2 inline-block">
+                        <img id="image" src="run-cat.gif" alt="Running Cat" class="w-full max-w-[300px] h-auto rounded-lg object-contain bg-slate-800/50 min-h-[200px]">
+                        
+                        <!-- 裝飾性角標 -->
+                        <div class="absolute top-4 left-4 w-2 h-2 border-t border-l border-white/30"></div>
+                        <div class="absolute top-4 right-4 w-2 h-2 border-t border-r border-white/30"></div>
+                        <div class="absolute bottom-4 left-4 w-2 h-2 border-b border-l border-white/30"></div>
+                        <div class="absolute bottom-4 right-4 w-2 h-2 border-b border-r border-white/30"></div>
+                    </div>
+                </div>
+
+                <!-- 描述標籤 -->
+                <div class="flex justify-center space-x-3 mt-4">
+                    <span class="px-3 py-1 rounded-full bg-pink-500/10 text-pink-400 text-xs border border-pink-500/20">GIF 動畫</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs border border-purple-500/20">HTML 練習</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

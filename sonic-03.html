@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>超音波與蜂鳴器連動</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://blocklypro.webduino.io/node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/webduino-all-0.4.20.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/webduino-blockly.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/firebase.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/runtime.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; overflow: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    /* 用於覆蓋 script 動態修改的樣式，強制置中 */
+    #demo-area-01-show {
+        font-family: 'Orbitron', monospace;
+        transition: all 0.3s ease;
+        line-height: 1;
+        text-shadow: 0 0 20px currentColor;
+    }
+    /* 隱藏原始圖片，改用 CSS 背景或圖示，或者美化它 */
+    img[name="light"] {
+        border-radius: 50%;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        margin-top: 20px;
+        transition: all 0.5s;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center relative">
+
+    <!-- 統一回上一頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <!-- 背景特效 -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-purple-600/30 rounded-full blur-[80px] animate-pulse"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/30 rounded-full blur-[80px] animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container max-w-lg w-full z-10 p-4">
+        <div class="glass-panel rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+            
+            <!-- 裝飾線條 -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
+
+            <!-- 標題 -->
+            <div class="text-center mb-8">
+                <h1 class="text-xl font-bold text-white tracking-wider">距離偵測警報系統</h1>
+            </div>
+
+            <!-- 主顯示區 -->
+            <div class="flex flex-col items-center justify-center min-h-[300px]">
+                <div class="text-slate-400 text-sm mb-4 font-mono tracking-widest uppercase">Distance (cm)</div>
+                
+                <!-- 數值顯示 (ID 必須保留給 Script 使用) -->
+                <div id="demo-area-01-show" class="text-8xl font-bold text-slate-200">0</div>
+                
+                <!-- 燈光圖片 (Name 必須保留給 Script 使用) -->
+                <div class="mt-8 p-4 rounded-full bg-slate-900/50 border border-slate-700/50">
+                    <img name="light" src="light_off.jpg" style="width:100px;height:100px;object-fit:cover;border-radius:50%;" alt="Light Indicator">
+                </div>
+            </div>
+
+            <!-- 底部資訊 -->
+            <div class="mt-8 text-center text-xs text-slate-500 font-mono">
+                Webduino: Ultrasonic(11,10) · RGB(6,8,7) · Buzzer(14)
+            </div>
+        </div>
+    </div>
+
+    <!-- 原始邏輯 Script (保留不變以確保功能) -->
+    <script language="JavaScript">
+    var ultrasonic;
+    var rgbled;
+    var buzzer;
+
+    function buzzer_music(m) {
+      var musicNotes = {};
+      musicNotes.notes = [];
+      musicNotes.tempos = [];
+      if (m[0].notes.length > 1) {
+        for (var i = 0; i < m.length; i++) {
+          if (Array.isArray(m[i].notes)) {
+            var cn = musicNotes.notes.concat(m[i].notes);
+            musicNotes.notes = cn;
+          } else {
+            musicNotes.notes.push(m[i].notes);
+          }
+          if (Array.isArray(m[i].tempos)) {
+            var ct = musicNotes.tempos.concat(m[i].tempos);
+            musicNotes.tempos = ct;
+          } else {
+            musicNotes.tempos.push(m[i].tempos);
+          }
+        }
+      } else {
+        musicNotes.notes = [m[0].notes];
+        musicNotes.tempos = [m[0].tempos];
+      }
+      return musicNotes;
+    }
+
+    boardReady({device: 'nbQD'}, function (board) {
+      board.samplingInterval = 2000;
+      ultrasonic = getUltrasonic(board, 11, 10);
+      rgbled = getRGBLed(board, 6, 8, 7);
+      buzzer = getBuzzer(board, 14);
+      
+      ultrasonic.ping(function (cm) {
+        document.getElementById('demo-area-01-show').innerHTML = ultrasonic.distance;
+        // Script logic controlling styles
+        if (ultrasonic.distance < 20) {
+          document.getElementById('demo-area-01-show').style.color = '#ff0000';
+          // Adjusted font sizes for mobile fit
+          document.getElementById('demo-area-01-show').style.fontSize = '8rem'; 
+          rgbled.setColor('#ff0000');	  
+          buzzer.play(buzzer_music([{ notes: 'B6', tempos: '1' }]).notes ,buzzer_music([{ notes: 'B6', tempos: '1' }]).tempos );
+          document.getElementsByName('light')[0].src='light_on.jpg'; // Fixed syntax for name selector if needed
+        } else if (ultrasonic.distance < 40) {
+          document.getElementById('demo-area-01-show').style.color = '#ffcc33';
+          document.getElementById('demo-area-01-show').style.fontSize = '7rem';
+          rgbled.setColor('#ffcc33');
+          buzzer.play(buzzer_music([{ notes: 'A5', tempos: '1' }]).notes ,buzzer_music([{ notes: 'A6', tempos: '1' }]).tempos );
+        } else if (ultrasonic.distance < 60) {
+          document.getElementById('demo-area-01-show').style.color = '#33ffff';
+          document.getElementById('demo-area-01-show').style.fontSize = '6rem';
+          rgbled.setColor('#33ffff');
+          buzzer.play(buzzer_music([{ notes: 'G4', tempos: '1' }]).notes ,buzzer_music([{ notes: 'G6', tempos: '1' }]).tempos );
+        } else if (ultrasonic.distance < 80) {
+          document.getElementById('demo-area-01-show').style.color = '#000099';
+          document.getElementById('demo-area-01-show').style.fontSize = '5rem';
+          rgbled.setColor('#000099');
+          buzzer.play(buzzer_music([{ notes: 'F3', tempos: '1' }]).notes ,buzzer_music([{ notes: 'F6', tempos: '1' }]).tempos );
+        } else {
+          document.getElementById('demo-area-01-show').style.color = '#33ff33';
+          document.getElementById('demo-area-01-show').style.fontSize = '4rem';
+          rgbled.setColor('#33ff33');
+          buzzer.play(buzzer_music([{ notes: '0', tempos: '1' }]).notes ,buzzer_music([{ notes: '0', tempos: '1' }]).tempos );
+          document.getElementsByName('light')[0].src='light_off.jpg';
+        }
+      }, 2000);
+    });
+    </script>
+</body>
+</html>

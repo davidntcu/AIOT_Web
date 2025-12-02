@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>超音波變色顯示</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://blocklypro.webduino.io/node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/webduino-all-0.4.20.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/webduino-blockly.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/firebase.min.js"></script>
+  <script src="https://blocklypro.webduino.io/dist/lib/runtime.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    /* 強制字體樣式 */
+    #demo-area-01-show { font-family: 'Orbitron', monospace; transition: all 0.5s ease; text-align: center; width: 100%; display: block; line-height: 1.2; }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200">
+
+    <!-- 統一回上一頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 shadow-2xl">
+            
+            <div class="mb-8 text-center">
+                <h1 class="text-sm font-bold text-slate-400">變色距離顯示</h1>
+            </div>
+
+            <!-- 數值容器 -->
+            <div class="h-64 flex flex-col items-center justify-center bg-slate-900/50 rounded-2xl border border-slate-700/50 mb-6 overflow-hidden">
+                <div id="demo-area-01-show" class="text-6xl text-slate-500">0</div>
+                <div class="text-xs text-slate-500 mt-2 uppercase tracking-widest font-mono">Distance</div>
+            </div>
+
+            <div class="flex justify-center">
+                <img name="light" src="light_off.jpg" style="width:60px;height:60px;border-radius:50%;opacity:0.6;">
+            </div>
+
+        </div>
+    </div>
+
+    <script language="JavaScript">
+    var ultrasonic;
+
+    boardReady({device: 'nbQD'}, function (board) {
+      board.samplingInterval = 250;
+      ultrasonic = getUltrasonic(board, 11, 10);
+      ultrasonic.ping(function (cm) {
+        var display = document.getElementById('demo-area-01-show');
+        display.innerHTML = ultrasonic.distance;
+        
+        // Script logic controlling styles
+        if (ultrasonic.distance < 20) {
+          display.style.color = '#ef4444'; // Red-500
+          display.style.fontSize = '6rem';
+          document.getElementsByName('light')[0].src='light_on.jpg';
+        } else if (ultrasonic.distance < 40) {
+          display.style.color = '#f97316'; // Orange-500
+          display.style.fontSize = '5rem';
+        } else if (ultrasonic.distance < 60) {
+          display.style.color = '#22c55e'; // Green-500
+          display.style.fontSize = '4rem';
+        } else if (ultrasonic.distance < 80) {
+          display.style.color = '#a855f7'; // Purple-500
+          display.style.fontSize = '3rem';
+        } else {
+          display.style.color = '#3b82f6'; // Blue-500
+          display.style.fontSize = '2rem';
+          document.getElementsByName('light')[0].src='light_off.jpg';
+        }
+      }, 500);
+    });
+    </script>
+</body>
+</html>

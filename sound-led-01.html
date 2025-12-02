@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>聲控 LED</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .sound-wave { animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(2); opacity: 0; } }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative">
+
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 border-t border-white/10 text-center relative overflow-hidden">
+            
+            <h1 class="text-xl font-bold mb-8">聲控照明系統</h1>
+
+            <!-- 麥克風動畫區 -->
+            <div class="relative h-48 flex items-center justify-center mb-6">
+                <!-- 動態波紋 (偵測時顯示) -->
+                <div id="wave1" class="absolute w-24 h-24 rounded-full bg-cyan-500/30 opacity-0 transition-opacity"></div>
+                <div id="wave2" class="absolute w-24 h-24 rounded-full bg-cyan-500/30 opacity-0 transition-opacity"></div>
+                
+                <!-- 燈泡容器 -->
+                <div class="relative z-10 p-4 bg-slate-800 rounded-full border border-slate-700">
+                    <img name="light" src="light_off.jpg" class="w-24 h-24 object-cover rounded-full transition-all duration-300" alt="Light Status">
+                </div>
+            </div>
+
+            <p class="text-sm text-slate-400">對著麥克風說話以點亮 LED</p>
+            <p class="text-xs text-slate-500 mt-2 font-mono">Sound: Pin 10 | LED: Pin 11</p>
+
+        </div>
+    </div>
+
+<script language="JavaScript">
+var sound;
+var led;
+
+boardReady('nbQD', function (board) {
+  board.samplingInterval = 20;
+  sound = getSound(board, 10);
+  led = getLed(board, 11);
+  
+  const lightImg = document.getElementsByName('light')[0];
+  const wave1 = document.getElementById('wave1');
+  const wave2 = document.getElementById('wave2');
+
+  sound.on("detected",function(){
+    console.log("Sound Detected");
+    led.on();
+    lightImg.src='light_on.jpg';
+    lightImg.style.boxShadow = "0 0 30px #fbbf24"; // Yellow glow
+    
+    // Activate animation
+    wave1.classList.add('sound-wave');
+    wave1.style.opacity = '1';
+    setTimeout(() => {
+        wave2.classList.add('sound-wave');
+        wave2.style.opacity = '1';
+    }, 500);
+  });
+  
+  sound.on("ended",function(){
+    setTimeout(function(){
+      setTimeout(function () {
+        led.off();
+        lightImg.src='light_off.jpg';
+        lightImg.style.boxShadow = "none";
+        
+        // Stop animation
+        wave1.classList.remove('sound-wave');
+        wave1.style.opacity = '0';
+        wave2.classList.remove('sound-wave');
+        wave2.style.opacity = '0';
+      }, 500);
+    }, 300);
+  });
+});
+</script>
+</body>
+</html>

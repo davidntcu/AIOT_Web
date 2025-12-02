@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIOT 智慧控制中心</title>
+    
+    <!-- 引入 Tailwind CSS 進行快速且現代化的樣式設計 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Webduino 核心函式庫 -->
+    <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+    <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+    
+    <!-- 引入字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 自定義動畫與樣式調整 -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            overflow-x: hidden;
+        }
+        
+        /* 背景動態光暈動畫 */
+        @keyframes float {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 燈泡發光效果 */
+        .glow-effect {
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6));
+            transition: all 0.5s ease;
+        }
+    </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="min-h-screen flex items-center justify-center text-slate-200 relative selection:bg-cyan-500 selection:text-white">
+
+    <!-- 背景裝飾 -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob bg-purple-600/30 w-96 h-96 rounded-full top-0 left-0 mix-blend-screen"></div>
+        <div class="blob bg-cyan-600/20 w-96 h-96 rounded-full bottom-0 right-0 mix-blend-screen animation-delay-2000"></div>
+        <div class="blob bg-blue-600/20 w-80 h-80 rounded-full top-1/2 left-1/2 mix-blend-screen animation-delay-4000"></div>
+    </div>
+
+    <!-- 主容器 (調整為 max-w-lg 以容納四個按鈕) -->
+    <div class="container mx-auto px-4 relative z-10 max-w-lg w-full">
+        
+        <!-- 標題區 -->
+        <header class="text-center mb-8">
+            <div class="inline-flex items-center justify-center p-3 mb-4 bg-white/5 rounded-2xl border border-white/10 shadow-lg backdrop-blur-sm">
+                <!-- CPU Icon SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-cyan-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
+                    AIOT控制中心
+                </h1>
+            </div>
+            <p class="text-slate-400 text-sm tracking-widest uppercase">智慧雲端 · 隨心掌控</p>
+        </header>
+
+        <!-- 控制面板卡片 -->
+        <div class="glass-panel rounded-3xl p-6 md:p-8 transform transition-all hover:scale-[1.01] duration-500">
+            
+            <!-- 選單區 -->
+            <div class="mb-8">
+                <label class="flex items-center text-slate-400 font-semibold mb-3 text-xs uppercase tracking-wider">
+                    <!-- Navigation Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+                    選擇控制元件
+                </label>
+                <div class="relative group">
+                    <select id="deviceSelect" 
+                        class="w-full appearance-none bg-slate-900/50 text-slate-200 border border-slate-700 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all cursor-pointer hover:bg-slate-800/80 hover:border-slate-600">
+                        <option value="#">請選擇控制元件...</option>
+                        <option value="all-examples.html">📚 所有範例總覽</option>
+                        <optgroup label="頁面導航" class="bg-slate-800">
+                            <option value="page-1.html">前往第一頁</option>
+                            <option value="page-2.html">前往第二頁</option>
+                        </optgroup>
+                        <optgroup label="Smart 系列" class="bg-slate-800">
+                            <option value="rgbled-smart.html">三色 LED - Smart</option>
+                            <option value="photoresistor-smart.html">光敏電阻 - Smart</option>
+                        </optgroup>
+                        <optgroup label="基礎元件" class="bg-slate-800">
+                            <option value="rgbled-01.html">三色 LED</option>
+                            <option value="sonic-01.html">超音波 01</option>
+                            <option value="sonic-02.html">超音波 02</option>
+                            <option value="sonic-03.html">超音波 03</option>
+                            <option value="button-01.html">按鈕狀態</option>
+                            <option value="button-02.html">按鈕累加</option>
+                        </optgroup>
+                    </select>
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-cyan-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速按鈕區 (改為 4 欄) -->
+            <div class="grid grid-cols-4 gap-2 mb-8">
+                <button onclick="location.href='rgbled-smart.html'" class="group relative overflow-hidden rounded-xl p-2 transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-pink-500/80 to-rose-600/80 text-white">
+                    <div class="flex flex-col items-center justify-center space-y-1 h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>
+                        <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">SM三色</span>
+                    </div>
+                </button>
+                <button onclick="location.href='photoresistor-smart.html'" class="group relative overflow-hidden rounded-xl p-2 transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-amber-400/80 to-orange-500/80 text-white">
+                    <div class="flex flex-col items-center justify-center space-y-1 h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">SM光敏</span>
+                    </div>
+                </button>
+                <button onclick="location.href='sonic-03.html'" class="group relative overflow-hidden rounded-xl p-2 transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-emerald-400/80 to-teal-600/80 text-white">
+                    <div class="flex flex-col items-center justify-center space-y-1 h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                        <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">超音波</span>
+                    </div>
+                </button>
+                <button onclick="location.href='all-examples.html'" class="group relative overflow-hidden rounded-xl p-2 transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-indigo-500/80 to-blue-600/80 text-white">
+                    <div class="flex flex-col items-center justify-center space-y-1 h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        <span class="text-[10px] md:text-xs font-bold whitespace-nowrap">所有範例</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="h-px w-full bg-slate-700/50 mb-8"></div>
+
+            <!-- 燈光控制區 -->
+            <div class="flex flex-col items-center">
+                
+                <!-- 燈泡容器 -->
+                <div id="lightContainer" class="relative mb-6 transition-all duration-700">
+                    <!-- 發光背景 -->
+                    <div id="glowBg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-amber-400/0 blur-[50px] transition-all duration-700"></div>
+                    
+                    <!-- 燈泡 SVG -->
+                    <div class="relative z-10 p-6 rounded-full bg-slate-800 border-4 border-slate-700 shadow-xl transition-all duration-500" id="lightIconBg">
+                        <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-slate-500 transition-colors duration-500" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M9 21h6v-1.5H9V21zM12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 開關按鈕 -->
+                <button id="toggleBtn" onclick="toggleLight()" class="w-full py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg active:scale-95 bg-slate-700 text-slate-300 hover:bg-slate-600">
+                    <svg id="powerIcon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+                    <span id="btnText">燈光已關閉</span>
+                </button>
+
+                <!-- 狀態指示 -->
+                <div class="mt-4 flex items-center space-x-2 text-xs font-medium uppercase tracking-wider">
+                    <span id="statusDot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+                    <span id="statusText" class="text-slate-500">等待連線...</span>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-slate-600 text-xs">
+            <p>© 2025 AIOT Web Project - Design by Creative Director</p>
+        </footer>
+    </div>
+
+    <!-- 邏輯控制腳本 -->
+    <script>
+        let isLightOn = false;
+        let isConnected = false;
+
+        // 確保 DOM 載入後執行初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 綁定下拉選單事件，確保導航功能正常運作
+            const deviceSelect = document.getElementById('deviceSelect');
+            if (deviceSelect) {
+                deviceSelect.addEventListener('change', function() {
+                    const value = this.value;
+                    if (value && value !== '#') {
+                        // 使用 window.location.href 進行明確的頁面跳轉
+                        window.location.href = value;
+                    }
+                });
+            }
+        });
+
+        // 燈光切換函式
+        function toggleLight() {
+            const lightIcon = document.getElementById('lightIcon');
+            const lightIconBg = document.getElementById('lightIconBg');
+            const glowBg = document.getElementById('glowBg');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const btnText = document.getElementById('btnText');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            // 切換狀態
+            isLightOn = !isLightOn;
+
+            // UI 更新邏輯 (Optimistic UI)
+            if (isLightOn) {
+                // 開燈樣式
+                lightIcon.classList.replace('text-slate-500', 'text-amber-100');
+                lightIconBg.classList.replace('bg-slate-800', 'bg-gradient-to-br');
+                lightIconBg.classList.add('from-amber-200', 'to-amber-400', 'border-amber-200', 'glow-effect');
+                lightIconBg.classList.remove('border-slate-700');
+                
+                glowBg.classList.replace('bg-amber-400/0', 'bg-amber-400/40');
+                
+                toggleBtn.className = "w-full py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg active:scale-95 bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-amber-500/30";
+                btnText.innerText = "燈光已開啟";
+                
+                statusText.innerText = "正在傳送指令...";
+                statusDot.className = "w-2 h-2 rounded-full bg-yellow-400 animate-ping";
+
+                // Webduino 邏輯：開燈
+                if (typeof boardReady === 'function') {
+                    boardReady('nbQD', function (board) {
+                        board.samplingInterval = 20;
+                        let led = getLed(board, 10);
+                        led.on();
+                        
+                        // 連線成功回饋
+                        statusText.innerText = "裝置已連線";
+                        statusText.classList.replace('text-slate-500', 'text-green-400');
+                        statusDot.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]";
+                    });
+                } else {
+                    console.log("Webduino 環境未載入，僅展示 UI 效果");
+                    statusText.innerText = "模擬模式 (無硬體)";
+                }
+
+            } else {
+                // 關燈樣式
+                lightIcon.classList.replace('text-amber-100', 'text-slate-500');
+                lightIconBg.classList.remove('bg-gradient-to-br', 'from-amber-200', 'to-amber-400', 'border-amber-200', 'glow-effect');
+                lightIconBg.classList.add('bg-slate-800', 'border-slate-700');
+                
+                glowBg.classList.replace('bg-amber-400/40', 'bg-amber-400/0');
+                
+                toggleBtn.className = "w-full py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg active:scale-95 bg-slate-700 text-slate-300 hover:bg-slate-600";
+                btnText.innerText = "燈光已關閉";
+                
+                statusText.innerText = "待機中";
+                statusText.classList.replace('text-green-400', 'text-slate-500');
+                statusDot.className = "w-2 h-2 rounded-full bg-slate-500";
+
+                // Webduino 邏輯：關燈
+                if (typeof boardReady === 'function') {
+                    boardReady('nbQD', function (board) {
+                        board.samplingInterval = 20;
+                        let led = getLed(board, 10);
+                        led.off();
+                    });
+                }
+            }
+        }
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

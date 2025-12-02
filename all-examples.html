@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有範例總覽 | AIOT 智慧控制</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            overflow-x: hidden;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(30, 41, 59, 0.8);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 relative selection:bg-indigo-500 selection:text-white">
+
+    <!-- 回首頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回首頁</span>
+    </button>
+
+    <!-- 背景 -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob bg-indigo-600/20 w-96 h-96 rounded-full top-0 left-0 mix-blend-screen"></div>
+        <div class="blob bg-blue-600/20 w-96 h-96 rounded-full bottom-0 right-0 mix-blend-screen animation-delay-2000"></div>
+    </div>
+
+    <!-- 主內容 -->
+    <div class="container mx-auto px-4 py-20 relative z-10 max-w-5xl">
+        
+        <header class="text-center mb-16">
+            <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400 mb-4">
+                全站範例總覽
+            </h1>
+            <p class="text-slate-400">AIOT 智慧控制專案圖書館</p>
+        </header>
+
+        <!-- 1. SMART 系列 -->
+        <section class="mb-12">
+            <div class="section-title text-pink-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path><path d="M8.5 8.5v.01"></path><path d="M16 12v.01"></path><path d="M12 16v.01"></path><path d="M12 2a10 10 0 0 1 10 10v4a2 2 0 0 1-2 2h-4"></path></svg>
+                <h2 class="text-xl font-bold">SMART 開發板系列</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="rgbled-smart.html" class="glass-panel card-hover rounded-2xl p-5 block group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-lg font-bold text-white group-hover:text-pink-400 transition-colors">Smart RGB 調色盤</span>
+                        <div class="p-2 bg-pink-500/20 rounded-lg text-pink-400"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg></div>
+                    </div>
+                    <p class="text-slate-400 text-sm">透過 Wi-Fi 控制 Smart 開發板上的 RGB LED 顏色。</p>
+                </a>
+                
+                <a href="photoresistor-smart.html" class="glass-panel card-hover rounded-2xl p-5 block group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-lg font-bold text-white group-hover:text-pink-400 transition-colors">Smart 光敏偵測</span>
+                        <div class="p-2 bg-pink-500/20 rounded-lg text-pink-400"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line></svg></div>
+                    </div>
+                    <p class="text-slate-400 text-sm">即時讀取環境光數值，並連動 LED 變色。</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 2. LED & RGB -->
+        <section class="mb-12">
+            <div class="section-title text-yellow-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6v-1.5H9V21zM12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
+                <h2 class="text-xl font-bold">LED 與 RGB 燈光控制</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <a href="rgbled-01.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">RGB 基礎控制</h3>
+                    <p class="text-xs text-slate-500">Pin: 6, 8, 7 (nbQD)</p>
+                </a>
+                <a href="rgbled-01-1.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">RGB 網格控制</h3>
+                    <p class="text-xs text-slate-500">Pin: 6, 8, 7 (Grid UI)</p>
+                </a>
+                <a href="rgbled-02.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">RGB (腳位變更)</h3>
+                    <p class="text-xs text-slate-500">Pin: 10, 9, 7</p>
+                </a>
+                <a href="led_blink_01.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">LED 自動閃爍</h3>
+                    <p class="text-xs text-slate-500">Pin 10 (Auto)</p>
+                </a>
+                <a href="led02.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">LED 閃爍速度</h3>
+                    <p class="text-xs text-slate-500">快/慢速切換</p>
+                </a>
+                <a href="led_on.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">LED 開啟測試</h3>
+                    <p class="text-xs text-slate-500">單一指令 (ON)</p>
+                </a>
+                <a href="led_off.html" class="glass-panel card-hover rounded-2xl p-4 block">
+                    <h3 class="font-bold text-white mb-1">LED 關閉測試</h3>
+                    <p class="text-xs text-slate-500">單一指令 (OFF)</p>
+                </a>
+                <a href="sound-led-01.html" class="glass-panel card-hover rounded-2xl p-4 block border-l-4 border-l-yellow-400">
+                    <h3 class="font-bold text-white mb-1">聲控 LED</h3>
+                    <p class="text-xs text-slate-500">聲音傳感器連動</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 3. 超音波 -->
+        <section class="mb-12">
+            <div class="section-title text-cyan-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"></path><path d="M6 12v-3a3 3 0 0 1 6 0v3"></path><path d="M18 12v-3a3 3 0 0 0-6 0v3"></path><path d="M5 19a2 2 0 0 1-2-2v-2"></path><path d="M21 15v2a2 2 0 0 1-2 2"></path></svg>
+                <h2 class="text-xl font-bold">超音波傳感器 (Ultrasonic)</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="sonic-01.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">距離偵測 01</h3>
+                    <p class="text-slate-400 text-sm mt-1">基礎距離顯示與 LED 開關連動 (&lt;20cm)。</p>
+                </a>
+                <a href="sonic-02.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">變色距離 02</h3>
+                    <p class="text-slate-400 text-sm mt-1">依據距離改變文字顏色與狀態圖示。</p>
+                </a>
+                <a href="sonic-03.html" class="glass-panel card-hover rounded-2xl p-5 block border-l-4 border-l-cyan-400">
+                    <h3 class="font-bold text-white text-lg">綜合警報 03</h3>
+                    <p class="text-slate-400 text-sm mt-1">整合超音波、RGB LED 與蜂鳴器警報。</p>
+                </a>
+                <a href="sonic-03-1.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">距離顯示改版</h3>
+                    <p class="text-slate-400 text-sm mt-1">Sonic-03 的 UI 變體，適合行動裝置。</p>
+                </a>
+                <a href="rgbled-03.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">RGB 距離變色</h3>
+                    <p class="text-slate-400 text-sm mt-1">距離數值直接對應 RGB 燈光顏色。</p>
+                </a>
+                <a href="led03.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">LED 連動 (圖)</h3>
+                    <p class="text-slate-400 text-sm mt-1">距離 &lt; 10cm 關閉 LED (含狀態圖)。</p>
+                </a>
+                <a href="led04.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">LED 連動 (純文字)</h3>
+                    <p class="text-slate-400 text-sm mt-1">極簡版距離監測。</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 4. 按鈕與遊戲 -->
+        <section class="mb-12">
+            <div class="section-title text-emerald-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"></rect><path d="M6 12h4"></path><path d="M8 10v4"></path><circle cx="17" cy="12" r="1.5"></circle></svg>
+                <h2 class="text-xl font-bold">按鈕與互動遊戲</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="button-01.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">按鈕狀態監測</h3>
+                    <p class="text-slate-400 text-sm">偵測按下、放開與長按事件。</p>
+                </a>
+                <a href="button-02.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">按鈕計數器</h3>
+                    <p class="text-slate-400 text-sm">點擊次數累加顯示。</p>
+                </a>
+                <a href="Button-Run_1.html" class="glass-panel card-hover rounded-2xl p-5 block border-l-4 border-l-emerald-400">
+                    <h3 class="font-bold text-white text-lg">人機賽跑 (200M)</h3>
+                    <p class="text-slate-400 text-sm">連點按鈕控制獅子與電腦貓競賽。</p>
+                </a>
+                <a href="button-03.html" class="glass-panel card-hover rounded-2xl p-5 block border-l-4 border-l-emerald-400">
+                    <h3 class="font-bold text-white text-lg">長途耐力賽 (400M)</h3>
+                    <p class="text-slate-400 text-sm">更長距離的賽跑挑戰。</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 5. 蜂鳴器 -->
+        <section class="mb-12">
+            <div class="section-title text-purple-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                <h2 class="text-xl font-bold">蜂鳴器音樂 (Buzzer)</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="buzzer-01.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">音樂盒 (Pin 11)</h3>
+                    <p class="text-slate-400 text-sm">基礎音樂播放與停止功能。</p>
+                </a>
+                <a href="buzzer-03.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">音樂打擊墊 (Pin 14)</h3>
+                    <p class="text-slate-400 text-sm">多首內建歌曲 (瑪利歐、真善美等) 點播。</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- 6. 頁面展示 -->
+        <section class="mb-12">
+            <div class="section-title text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <h2 class="text-xl font-bold">作業展示頁面</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="page-1.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">Page 01 - Running Cat</h3>
+                    <p class="text-slate-400 text-sm">純 HTML/CSS 展示頁面。</p>
+                </a>
+                <a href="page-2.html" class="glass-panel card-hover rounded-2xl p-5 block">
+                    <h3 class="font-bold text-white text-lg">Page 02 - Running Lion</h3>
+                    <p class="text-slate-400 text-sm">純 HTML/CSS 展示頁面。</p>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>

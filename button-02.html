@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>按鈕累加計數</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+  <script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow: hidden; }
+    .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .counter-text { font-family: 'Orbitron', monospace; text-shadow: 0 0 20px rgba(99, 102, 241, 0.8); }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center text-slate-200">
+
+    <!-- 統一回上一頁按鈕 -->
+    <button onclick="location.href='index.html'" class="fixed top-6 left-6 z-50 px-4 py-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/80 border border-slate-700/50 text-slate-300 hover:text-white transition-all duration-300 flex items-center space-x-2 text-sm font-medium shadow-lg backdrop-blur-sm group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>回上一頁</span>
+    </button>
+
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]"></div>
+    </div>
+
+    <div class="container max-w-sm w-full p-4 relative z-10">
+        <div class="glass-panel rounded-3xl p-8 text-center shadow-2xl">
+            
+            <div class="mb-12">
+                <h1 class="text-lg font-bold text-slate-300">按鈕計數器</h1>
+            </div>
+
+            <!-- 計數器顯示 -->
+            <div class="bg-slate-900 rounded-2xl p-8 border border-slate-700 shadow-inner mb-8">
+                <div id="show" class="counter-text text-8xl text-indigo-400 font-bold transition-transform duration-100 transform">0</div>
+            </div>
+
+            <p class="text-xs text-slate-500 mb-2">按下按鈕進行累加</p>
+            <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 w-1/2 animate-pulse"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script language="JavaScript">
+    boardReady('nbQD', function (board) {
+      board.samplingInterval = 20;
+      button = getButton(board, 11);
+      
+      const showDiv = document.getElementById("show");
+      showDiv.innerHTML = 0;
+      
+      button.on("pressed",function(){
+        console.log("pressed");
+        
+        // 視覺回饋動畫
+        showDiv.style.transform = "scale(1.2)";
+        setTimeout(() => showDiv.style.transform = "scale(1)", 100);
+
+        var varString = showDiv.innerHTML;
+        var varNumber = varString * 1;
+        varNumber = varNumber + 1;
+        showDiv.innerHTML = varNumber;
+      });
+    });
+    </script>
+</body>
+</html>
